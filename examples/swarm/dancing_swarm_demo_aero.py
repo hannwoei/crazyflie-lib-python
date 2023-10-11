@@ -179,7 +179,12 @@ def take_off(scf, params):
     # Go to start location
     commander.go_to(SHIFT_X + SPACING * (d-1), SHIFT_Y + 0.1 -(SPACING* (d-1)), DEFAULT_HEIGHT , 0.0 ,2.0)
     time.sleep(3.0)
-
+ 
+#     time.sleep(7.0)
+#     commander.land(0.0, 2.0)
+#     time.sleep(2)
+#     commander.stop()
+    
 # Do a Loop
 LOOPS = 3
 def run_v_circle_aero(scf, params):
@@ -205,7 +210,7 @@ def run_v_circle_aero(scf, params):
 
     # Go back to initial position and land again
     commander.go_to(SHIFT_X + SPACING * (d-1), SHIFT_Y -(SPACING* (d-1)),DEFAULT_HEIGHT , 0.0 ,2.0)
-    time.sleep(5.0)
+    time.sleep(2.0)
     if d == 1:
         commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0)
     if d == 2:
@@ -223,25 +228,25 @@ def run_v_circle_aero(scf, params):
     commander.stop()
 
 # test
-def run_shared_sequence_test(scf, params):
-    cf = scf.cf
-
-    d = params['d']
-
-    commander = cf.high_level_commander
-
-    time.sleep(5.0)
-    if d == 1:
-#         commander.go_to(INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*7 ,2.0) # URI4
-        commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4 ,2.0) # URI1
-    if d == 2:
-#         commander.go_to(-INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*3 ,2.0) # URI2
-        commander.go_to(INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*5 ,2.0) # URI5
-
-    time.sleep(10.0)
-    commander.land(0.0, 2.0)
-    time.sleep(2)
-    commander.stop()    
+# def run_shared_sequence_test(scf, params):
+#     cf = scf.cf
+# 
+#     d = params['d']
+# 
+#     commander = cf.high_level_commander
+# 
+#     time.sleep(5.0)
+#     if d == 1:
+# #         commander.go_to(INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*7 ,2.0) # URI4
+#         commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4 ,2.0) # URI1
+#     if d == 2:
+# #         commander.go_to(-INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*3 ,2.0) # URI2
+#         commander.go_to(INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*5 ,2.0) # URI5
+# 
+#     time.sleep(10.0)
+#     commander.land(0.0, 2.0)
+#     time.sleep(2)
+#     commander.stop()    
 
 def run_h_circle_aero(scf, params):
     cf = scf.cf
@@ -259,6 +264,7 @@ def run_h_circle_aero(scf, params):
     
     commander = cf.high_level_commander
 
+    # 1st circle
     time.sleep(5.0)
     if d == 1:
         commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4 ,2.0) # URI1
@@ -274,11 +280,45 @@ def run_h_circle_aero(scf, params):
     time.sleep(5.0)
     for _ in range(2):
         # The time for one revolution
-        circle_time = 8
+        circle_time = 10 # 8
         steps = circle_time * fs
         for _ in range(steps):
             cf.commander.send_hover_setpoint(c * comp * math.pi / circle_time,
                                              0, 360.0 / circle_time, z)
+            time.sleep(fsi)
+    
+    if d == 1:
+        commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0) # URI1
+    if d == 2:
+        commander.go_to(-INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0) # URI2
+    if d == 3:
+        commander.go_to(0.0, 0.0 ,DEFAULT_HEIGHT+0.2 , 0.0 ,2.0) # URI3
+    if d == 4:
+        commander.go_to(INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0) # URI4
+    if d == 5:
+        commander.go_to(INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0) # URI5
+                    
+     # 2nd circle
+    time.sleep(3.0)
+    if d == 1:
+        commander.go_to(-INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*5 ,2.0) # URI1
+    if d == 2:
+        commander.go_to(-INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*7 ,2.0) # URI2
+    if d == 3:
+        commander.go_to(0.0, 0.0 ,DEFAULT_HEIGHT+0.2 , 0.0 ,2.0) # URI3
+    if d == 4:
+        commander.go_to(INIT_SPACING, INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4*3 ,2.0) # URI4
+    if d == 5:
+        commander.go_to(INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , np.pi/4 ,2.0) # URI5
+       
+    time.sleep(3.0)
+    for _ in range(2):
+        # The time for one revolution
+        circle_time = 10
+        steps = circle_time * fs
+        for _ in range(steps):
+            cf.commander.send_hover_setpoint(c * comp * math.pi / circle_time,
+                                             0, -360.0 / circle_time, z)
             time.sleep(fsi)
     
     if d == 1:
@@ -293,7 +333,7 @@ def run_h_circle_aero(scf, params):
         commander.go_to(INIT_SPACING, -INIT_SPACING ,DEFAULT_HEIGHT , 0.0 ,2.0) # URI5
                    
     time.sleep(5.0)
-    
+       
     commander.go_to(SHIFT_X + SPACING * (d-1), SHIFT_Y -(SPACING* (d-1)),DEFAULT_HEIGHT , 0.0 ,2.0)
     time.sleep(5.0)      
 #     commander.land(0.0, 2.0)
@@ -311,6 +351,7 @@ def run_square_aero(scf):
     commander.takeoff(DEFAULT_HEIGHT, 2.0)
     time.sleep(3)
 
+    # 1st square
     commander.go_to(box_size, 0, 0, 0, flight_time, relative=True)
     time.sleep(flight_time)
 
@@ -323,9 +364,23 @@ def run_square_aero(scf):
     commander.go_to(0, -box_size, 0, 0, flight_time, relative=True)
     time.sleep(flight_time)
 
+    # 2nd square
+#     time.sleep(2)
+
+    commander.go_to(0, -box_size, 0, 0, flight_time, relative=True)
+    time.sleep(flight_time)
+
+    commander.go_to(-box_size, 0, 0, 0, flight_time, relative=True)
+    time.sleep(flight_time)
+
+    commander.go_to(0, box_size, 0, 0, flight_time, relative=True)
+    time.sleep(flight_time)
+
+    commander.go_to(box_size, 0, 0, 0, flight_time, relative=True)
+    time.sleep(flight_time)
+    
 #     commander.land(0.0, 2.0)
 #     time.sleep(2)
-# 
 #     commander.stop()
   
 # URIS of swarm
